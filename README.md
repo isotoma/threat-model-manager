@@ -2,6 +2,12 @@
 
 Documentation management for threat models
 
+## Running it
+
+Currently there is only one command, `generate`:
+
+    threat-model-manager generate filename.yaml
+
 ## Input file format
 
 The input file is a YAML file of the following format:

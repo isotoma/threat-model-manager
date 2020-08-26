@@ -1,3 +1,4 @@
+#! /usr/bin/env node
 import * as yargs from 'yargs';
 import { parseDataflowFile, checkDataflowFile } from './parser';
 import { generateGraph, legend } from './diagram';
