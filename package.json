@@ -2,7 +2,6 @@
   "name": "threat-model-manager",
   "version": "1.0.1",
   "description": "Threat model documentation",
-  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npx tsc"
