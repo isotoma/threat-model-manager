@@ -1,0 +1,32 @@
+{
+  "name": "doc",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npx tsc"
+  },
+  "bin": {
+    "threat-model-manager": "./lib/cli.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/js-yaml": "^3.12.5",
+    "@types/node": "^14.6.0",
+    "@types/ramda": "^0.27.14",
+    "@types/yargs": "^15.0.5",
+    "typescript": "^3.9.7"
+  },
+  "dependencies": {
+    "fp-ts": "^2.8.1",
+    "io-ts": "^2.2.10",
+    "io-ts-types": "^0.5.10",
+    "js-yaml": "^3.14.0",
+    "monocle-ts": "^2.3.3",
+    "newtype-ts": "^0.3.4",
+    "ramda": "^0.27.1",
+    "yargs": "^15.4.1"
+  }
+}
