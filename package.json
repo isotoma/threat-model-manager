@@ -1,17 +1,17 @@
 {
-  "name": "doc",
+  "name": "threat-model-manager",
   "version": "1.0.0",
-  "description": "",
+  "description": "Threat model documentation",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npx tsc"
   },
   "bin": {
-    "threat-model-manager": "./lib/cli.js"
+    "threat-model-manager": "lib/cli.js"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Isotoma",
+  "license": "Apache-2.0",
   "devDependencies": {
     "@types/js-yaml": "^3.12.5",
     "@types/node": "^14.6.0",
@@ -28,5 +28,16 @@
     "newtype-ts": "^0.3.4",
     "ramda": "^0.27.1",
     "yargs": "^15.4.1"
-  }
+  },
+  "directories": {
+    "lib": "lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/isotoma/threat-model-manager.git"
+  },
+  "bugs": {
+    "url": "https://github.com/isotoma/threat-model-manager/issues"
+  },
+  "homepage": "https://github.com/isotoma/threat-model-manager#readme"
 }
