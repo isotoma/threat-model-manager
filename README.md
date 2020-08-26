@@ -2,7 +2,24 @@
 
 Documentation management for threat models
 
+## Building it
+
+You can install from npm:
+
+    npm i threat-model-manager
+
+Or build from source:
+
+    npm i
+    npm run build
+
+If you build from source you will need to run:
+
+    node lib/cli.js generate filename.yaml
+
 ## Running it
+
+If installed from npm.
 
 Currently there is only one command, `generate`:
 
