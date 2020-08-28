@@ -67,14 +67,16 @@ export const generateGraph = (dataflow: DataflowFile): { [name: string]: string 
                 const destNode = dataflow.nodes[flow.to];
                 if (destNode.component == cluster && node.component != cluster && !R.contains(name, added)) {
                     added.push(name);
-                    const label = `${node.index}. ${node.label}`;
-                    const nodeDefinition = `    "${name}" [label="${label}",${nodeStyle(node)}];`;
+                    const prelabel = node.component ? `<i>${node.component}</i><br /><br />` : '';
+                    const label = `${prelabel}${node.index}. ${node.label}`;
+                    const nodeDefinition = `    "${name}" [label=<${label}>,${nodeStyle(node)}];`;
                     gv[cluster].push(nodeDefinition);
                 }
                 if (destNode.component != cluster && node.component == cluster && !R.contains(flow.to, added)) {
                     added.push(flow.to);
-                    const label = `${destNode.index}. ${destNode.label}`;
-                    const nodeDefinition = `    "${flow.to}" [label="${label}",${nodeStyle(destNode)}];`;
+                    const prelabel = destNode.component ? `<i>${destNode.component}</i><br /><br />` : '';
+                    const label = `${prelabel}${destNode.index}. ${destNode.label}`;
+                    const nodeDefinition = `    "${flow.to}" [label=<${label}>,${nodeStyle(destNode)}];`;
                     gv[cluster].push(nodeDefinition);
                 }
             }
