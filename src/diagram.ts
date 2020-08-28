@@ -32,8 +32,15 @@ export const legend = () => {
     return gv.join('\n');
 };
 
+export const nodeLabeller = (dataflow: DataflowFile) => (node: FlowNode, includeComponent?: boolean) => {
+    const prelabel = node.component && includeComponent ? `<i>${node.component}</i><br /><br />` : '';
+    const sublabel = node.classes ? '<br />' + R.map((n) => `[${dataflow.classes[n].label}]<br />`, node.classes) : '';
+    return `${prelabel}${node.index}. ${node.label}${sublabel}`;
+};
+
 export const generateGraph = (dataflow: DataflowFile): { [name: string]: string } => {
     const gv: { [name: string]: string[] } = {};
+    const label = nodeLabeller(dataflow);
     for (const componentId of [''].concat(R.keys(dataflow.components))) {
         gv[componentId] = [];
         gv[componentId].push('digraph G {');
@@ -52,8 +59,7 @@ export const generateGraph = (dataflow: DataflowFile): { [name: string]: string 
             gv[cluster].push(`        label = "${dataflow.components[cluster].label}"`);
         }
         for (const [name, node] of clusters[cluster]) {
-            const label = `${node.index}. ${node.label}`;
-            const nodeDefinition = `        "${name}" [label="${label}",${nodeStyle(node)}];`;
+            const nodeDefinition = `        "${name}" [label=<${label(node)}>,${nodeStyle(node)}];`;
             gv[''].push(nodeDefinition);
             gv[cluster].push(nodeDefinition);
         }
@@ -67,22 +73,14 @@ export const generateGraph = (dataflow: DataflowFile): { [name: string]: string 
                 const destNode = dataflow.nodes[flow.to];
                 if (destNode.component == cluster && node.component != cluster && !R.contains(name, added)) {
                     added.push(name);
-                    const prelabel = node.component ? `<i>${node.component}</i><br /><br />` : '';
-                    const sublabel = node.classes
-                        ? '<br />' + R.map((n) => `[${dataflow.classes[n].label}]<br />`, node.classes)
-                        : '';
-                    const label = `${prelabel}${node.index}. ${node.label}${sublabel}`;
-                    const nodeDefinition = `    "${name}" [label=<${label}>,${nodeStyle(node)}];`;
+                    const nodeDefinition = `    "${name}" [label=<${label(node, true)}>,${nodeStyle(node)}];`;
                     gv[cluster].push(nodeDefinition);
                 }
                 if (destNode.component != cluster && node.component == cluster && !R.contains(flow.to, added)) {
                     added.push(flow.to);
-                    const prelabel = destNode.component ? `<i>${destNode.component}</i><br /><br />` : '';
-                    const sublabel = destNode.classes
-                        ? '<br />' + R.map((n) => `[${dataflow.classes[n].label}]<br />`, destNode.classes)
-                        : '';
-                    const label = `${prelabel}${destNode.index}. ${destNode.label}${sublabel}`;
-                    const nodeDefinition = `    "${flow.to}" [label=<${label}>,${nodeStyle(destNode)}];`;
+                    const nodeDefinition = `    "${flow.to}" [label=<${label(destNode, true)}>,${nodeStyle(
+                        destNode,
+                    )}];`;
                     gv[cluster].push(nodeDefinition);
                 }
             }
