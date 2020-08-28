@@ -46,7 +46,7 @@ export const generateGraph = (dataflow: DataflowFile): string => {
     for (const [name, node] of R.toPairs(dataflow.nodes)) {
         for (const t of node.flows) {
             const edgeIndex = index++;
-            gv.push(`    ${name} -> ${t.to} [label="${edgeIndex}"];`);
+            gv.push(`    "${name}" -> "${t.to}" [label="${edgeIndex}"];`);
         }
     }
     gv.push('}');
