@@ -34,44 +34,63 @@ export const legend = () => {
 
 export const generateGraph = (dataflow: DataflowFile): { [name: string]: string } => {
     const gv: { [name: string]: string[] } = {};
-    gv[''] = [];
-    gv[''].push('digraph G {');
-    gv[''].push('    graph [fontname="helvetica",fontsize=10];');
-    gv[''].push('    node [fontname="helvetica",fontsize=10];');
-    gv[''].push('    edge [fontname="helvetica",fontsize=10];');
+    for (const componentId of [''].concat(R.keys(dataflow.components))) {
+        gv[componentId] = [];
+        gv[componentId].push('digraph G {');
+        gv[componentId].push('    graph [fontname="helvetica",fontsize=10];');
+        gv[componentId].push('    node [fontname="helvetica",fontsize=10];');
+        gv[componentId].push('    edge [fontname="helvetica",fontsize=10];');
+    }
     const clusters = R.groupBy((x) => x[1].component, R.toPairs(dataflow.nodes));
     const clusterNames = R.keys(clusters);
     for (const clusterId in clusterNames) {
         const cluster = clusterNames[clusterId];
         if (cluster) {
-            gv[cluster] = [];
             gv[''].push(`    subgraph cluster_${clusterId} {`);
+            gv[cluster].push(`    subgraph cluster_${clusterId} {`);
             gv[''].push(`        label = "${dataflow.components[cluster].label}"`);
+            gv[cluster].push(`        label = "${dataflow.components[cluster].label}"`);
         }
         for (const [name, node] of clusters[cluster]) {
             const label = `${node.index}. ${node.label}`;
             const nodeDefinition = `        "${name}" [label="${label}",${nodeStyle(node)}];`;
             gv[''].push(nodeDefinition);
             gv[cluster].push(nodeDefinition);
-            for (const f of node.flows) {
-                const toNode = dataflow.nodes[f.to];
-                if (toNode.component) {
-                    if (gv[toNode.component] === undefined) {
-                        gv[toNode.component] = [];
-                    }
-                    gv[toNode.component].push(nodeDefinition);
-                }
-            }
         }
         if (cluster) {
             gv[''].push(`    }`);
+            gv[cluster].push(`    }`);
+        }
+        for (const [name, node] of R.toPairs(dataflow.nodes)) {
+            const added: string[] = [];
+            for (const flow of node.flows) {
+                const destNode = dataflow.nodes[flow.to];
+                if (destNode.component == cluster && node.component != cluster && !R.contains(name, added)) {
+                    added.push(name);
+                    const label = `${node.index}. ${node.label}`;
+                    const nodeDefinition = `    "${name}" [label="${label}",${nodeStyle(node)}];`;
+                    gv[cluster].push(nodeDefinition);
+                }
+                if (destNode.component != cluster && node.component == cluster && !R.contains(flow.to, added)) {
+                    added.push(flow.to);
+                    const label = `${destNode.index}. ${destNode.label}`;
+                    const nodeDefinition = `    "${flow.to}" [label="${label}",${nodeStyle(destNode)}];`;
+                    gv[cluster].push(nodeDefinition);
+                }
+            }
+        }
+        for (const [name, node] of R.toPairs(dataflow.nodes)) {
+            for (const flow of node.flows) {
+                const destNode = dataflow.nodes[flow.to];
+                if (node.component == cluster || destNode.component == cluster) {
+                    const flowText = `    "${name}" -> "${flow.to}" [label="${flow.index}"];`;
+                    gv[cluster].push(flowText);
+                }
+            }
         }
     }
-    for (const [name, node] of R.toPairs(dataflow.nodes)) {
-        for (const t of node.flows) {
-            gv[''].push(`    "${name}" -> "${t.to}" [label="${t.index}"];`);
-        }
+    for (const componentId of [''].concat(R.keys(dataflow.components))) {
+        gv[componentId].push('}');
     }
-    gv[''].push('}');
     return R.map((x) => x.join('\n'), gv);
 };

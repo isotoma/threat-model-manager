@@ -33,22 +33,22 @@ const generate = (props: GenerateProps) => {
 
     const prefix = props.input.endsWith('.yaml') ? props.input.substr(0, props.input.length - 5) : props.input;
     for (const graph in graphs) {
-        const filename = graph ? `${prefix}.${graph}.dot` : `${prefix}.dot`;
-        fs.writeFileSync(filename, graphs[graph]);
+        const filePrefix = graph ? `${prefix}.${graph}` : prefix;
+        fs.writeFileSync(`${filePrefix}.dot`, graphs[graph]);
+        const dot = child_process.spawnSync('dot', ['-Tpng', `${filePrefix}.dot`, '-o', `${filePrefix}.png`]);
+        if (dot.error) {
+            console.error(dot.error);
+            process.exit(1);
+        }
     }
     fs.writeFileSync(`${prefix}.html`, table);
     fs.writeFileSync(`${prefix}.legend.dot`, legend());
-    if (fs.existsSync(`${prefix}.png`)) {
-        fs.unlinkSync(`${prefix}.png`);
-    }
-    const dot = child_process.spawnSync('dot', ['-Tpng', `${prefix}.dot`, '-o', `${prefix}.png`]);
-    if (dot.error) {
-        console.error(dot.error);
-        process.exit(1);
-    }
+    // if (fs.existsSync(`${prefix}.png`)) {
+    //     fs.unlinkSync(`${prefix}.png`);
+    // }
     const leg = child_process.spawnSync('dot', ['-Tpng', `${prefix}.legend.dot`, '-o', `${prefix}.legend.png`]);
     if (leg.error) {
-        console.error(dot.error);
+        console.error(leg.error);
         process.exit(1);
     }
 };
