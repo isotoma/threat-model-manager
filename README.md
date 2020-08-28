@@ -29,9 +29,13 @@ Currently there is only one command, `generate`:
 
 The input file is a YAML file of the following format:
 
+    components:
+      component-a:
+        label: Component A
     nodes:
-      node_name_a:
+      node-name-a:
         label: The name for node a
+        component: component-a
         threats:
         - type: <threat type>
           threat: text for threat
@@ -39,7 +43,7 @@ The input file is a YAML file of the following format:
           risk: a number
           ticket: a reference to a ticket for resolution/mitigation
         flows:
-        - to: node_name_b
+        - to: node-name-b
           threats:
           - type: <threat type>
             threat: text for threat
