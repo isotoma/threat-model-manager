@@ -39,6 +39,7 @@ const FlowNode = t.type({
     index: withFallback(t.number, -1),
     label: t.string,
     component: withFallback(t.string, ''),
+    classes: withFallback(t.array(t.string), []),
     type: withFallback(NodeType, 'process'),
     threats: withFallback(t.array(Threat), []),
     flows: withFallback(t.array(Flow), []),
@@ -50,8 +51,14 @@ const Component = t.type({
     label: t.string,
 });
 
+const Class = t.type({
+    label: t.string,
+    threats: withFallback(t.array(Threat), []),
+});
+
 const DataflowFile = t.type({
     components: t.dictionary(t.string, Component),
+    classes: t.dictionary(t.string, Class),
     nodes: t.dictionary(t.string, FlowNode),
 });
 
@@ -93,6 +100,14 @@ export const checkDataflowFile = (dataflow: DataflowFile) => {
             if (!dataflow.components[node.component]) {
                 console.error(`component ${node.component} referenced by node ${name} does not exist`);
                 valid = false;
+            }
+        }
+        if (node.classes) {
+            for (const c of node.classes) {
+                if (!dataflow.classes[c]) {
+                    console.error(`class ${c} referenced by ${name} does not exist`);
+                    valid = false;
+                }
             }
         }
         if (node.flows) {
