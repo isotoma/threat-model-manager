@@ -1,11 +1,12 @@
 #! /usr/bin/env node
 import * as yargs from 'yargs';
-import { parseDataflowFile, checkDataflowFile } from './parser';
+import { parseDataflowFile, checkDataflowFile, updateIndex } from './parser';
 import { generateGraph, legend } from './diagram';
 import { generateTable } from './table';
 
 import fs from 'fs';
 import child_process from 'child_process';
+import { update } from 'ramda';
 
 const argv = yargs
     .command('generate <input>', 'Generate output', (yargs) =>
@@ -25,12 +26,16 @@ export interface GenerateProps {
 
 const generate = (props: GenerateProps) => {
     const dataflow = parseDataflowFile(props.input);
+    updateIndex(dataflow);
     checkDataflowFile(dataflow);
-    const graph = generateGraph(dataflow);
+    const graphs = generateGraph(dataflow);
     const table = generateTable(dataflow);
 
     const prefix = props.input.endsWith('.yaml') ? props.input.substr(0, props.input.length - 5) : props.input;
-    fs.writeFileSync(`${prefix}.dot`, graph);
+    for (const graph in graphs) {
+        const filename = graph ? `${prefix}.${graph}.dot` : `${prefix}.dot`;
+        fs.writeFileSync(filename, graphs[graph]);
+    }
     fs.writeFileSync(`${prefix}.html`, table);
     fs.writeFileSync(`${prefix}.legend.dot`, legend());
     if (fs.existsSync(`${prefix}.png`)) {

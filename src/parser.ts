@@ -29,12 +29,14 @@ type Threat = t.TypeOf<typeof Threat>;
 
 const Flow = t.type({
     to: t.string,
+    index: withFallback(t.number, -1),
     threats: withFallback(t.array(Threat), []),
 });
 
 type Flow = t.TypeOf<typeof Flow>;
 
 const FlowNode = t.type({
+    index: withFallback(t.number, -1),
     label: t.string,
     component: withFallback(t.string, ''),
     type: withFallback(NodeType, 'process'),
@@ -64,6 +66,23 @@ export const parseDataflowFile = (filename: string): DataflowFile => {
     } else {
         console.log(PathReporter.report(decoded).join('\n'));
         process.exit(-1);
+    }
+};
+
+export const updateIndex = (dataflow: DataflowFile) => {
+    const nodeIndexes = R.map(R.prop('index'), R.values(dataflow.nodes));
+    const edgeIndexes = R.map(R.prop('index'), R.flatten(R.map(R.prop('flows'), R.values(dataflow.nodes))));
+    const maxIndex = R.reduce(R.max, 0, R.reject(R.equals(-1), nodeIndexes.concat(edgeIndexes)));
+    let i = (maxIndex as number) + 1;
+    for (const node of R.values(dataflow.nodes)) {
+        if (node.index == -1) {
+            node.index = i++;
+        }
+        for (const flow of node.flows) {
+            if (flow.index == -1) {
+                flow.index = i++;
+            }
+        }
     }
 };
 
