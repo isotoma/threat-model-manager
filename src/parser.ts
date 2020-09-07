@@ -57,8 +57,8 @@ const Class = t.type({
 });
 
 const DataflowFile = t.type({
-    components: t.dictionary(t.string, Component),
-    classes: t.dictionary(t.string, Class),
+    components: withFallback(t.dictionary(t.string, Component), {}),
+    classes: withFallback(t.dictionary(t.string, Class), {}),
     nodes: t.dictionary(t.string, FlowNode),
 });
 

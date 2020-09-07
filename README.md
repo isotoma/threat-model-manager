@@ -29,6 +29,15 @@ Currently there is only one command, `generate`:
 
 The input file is a YAML file of the following format:
 
+    classes:
+      node-class-a:
+        label: Class A
+        threats:
+        - type: <threat type>
+          threat: text for threat
+          notes: some text
+          risk: a number
+          ticket: a reference to a ticket for resolution/mitigation
     components:
       component-a:
         label: Component A
@@ -36,6 +45,8 @@ The input file is a YAML file of the following format:
       node-name-a:
         label: The name for node a
         component: component-a
+        classes:
+        - node-class-a
         threats:
         - type: <threat type>
           threat: text for threat
@@ -64,6 +75,6 @@ node names are only used for references between flows and nodes, but the model i
 
 ## Output
 
-The output is a graphviz dot file, and a png, a legend png and an html file of threats which can be pasted into a document.
+The output is a graphviz dot file per component, and one overall, plus pngs for each.
 
 Numeric references are generated on the fly, but are not stable if you add or remove nodes or flows.
