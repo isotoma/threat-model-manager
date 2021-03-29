@@ -10,12 +10,15 @@ const threatTypeNames = {
     elevation: 'Privilege elevation',
 };
 
-export const generateTable = (dataflow: DataflowFile): string => {
+export const generateTable = (dataflow: DataflowFile, baseHeadingLevel: number): string => {
+    const h1 = (s: string) => `<h${baseHeadingLevel}>${s}</h${baseHeadingLevel}>`;
+    const h2 = (s: string) => `<h${baseHeadingLevel + 1}>${s}</h${baseHeadingLevel + 1}>`;
+
     const log = [];
-    log.push('<h1>Classes</h1>');
+    log.push(h1('Classes'));
     for (const className in dataflow.classes) {
         const c = dataflow.classes[className];
-        log.push(`<h2>${c.label}</h2>`);
+        log.push(h2(c.label));
         if (c.threats) {
             log.push('<table>');
             log.push('<tr><th>Threat type</th><th>Threat</th><th>Notes</th><th>Risk</th><th>Ticket</th></tr>');

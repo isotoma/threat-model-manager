@@ -15,6 +15,11 @@ const argv = yargs
                 describe: 'the input yaml file',
                 type: 'string',
             })
+            .option('base-heading-level', {
+                describe: 'The base heading level i.e. 2 for h2',
+                type: 'number',
+                default: 1,
+            })
             .demandOption(['input']),
     )
     .demandCommand(1)
@@ -22,6 +27,7 @@ const argv = yargs
 
 export interface GenerateProps {
     readonly input: string;
+    readonly 'base-heading-level': number;
 }
 
 const generate = (props: GenerateProps) => {
@@ -29,7 +35,7 @@ const generate = (props: GenerateProps) => {
     updateIndex(dataflow);
     checkDataflowFile(dataflow);
     const graphs = generateGraph(dataflow);
-    const table = generateTable(dataflow);
+    const table = generateTable(dataflow, props['base-heading-level']);
 
     const prefix = props.input.endsWith('.yaml') ? props.input.substr(0, props.input.length - 5) : props.input;
     for (const graph in graphs) {
